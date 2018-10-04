@@ -50,7 +50,8 @@ function scene:create(event)
         text = player1_score,
         x = 0,
         y = 0,
-        fontSize = 50
+		font = "ObelixPro",
+        fontSize = 35
     }
     player1_score_text:setFillColor(0, 0, 0)
     player1_score_text.anchorX = 0
@@ -59,7 +60,8 @@ function scene:create(event)
         text = player2_score,
         x = maxWidth,
         y = maxHeight - 85,
-        fontSize = 50
+		font = "OBelixPro",
+        fontSize = 35
     }
     player2_score_text:setFillColor(0, 0, 0)
     player2_score_text.anchorX = 1

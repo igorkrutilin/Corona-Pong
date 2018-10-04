@@ -17,7 +17,11 @@ function scene:create(event)
 	local sceneGroup = self.view
 	-- Code here runs when the scene is first created but has not yet appeared on screen
     display.setDefault("background", 1, 1, 1)
-    local play_button = display.newText(sceneGroup, "Play", display.contentCenterX, 200, native.systemFont, 44)
+    
+    local name = display.newText(sceneGroup, "Corona Pong", display.contentCenterX, 80, "ObelixPro", 35)
+    name:setFillColor(0, 0, 0)
+
+    local play_button = display.newText(sceneGroup, "Play", display.contentCenterX, 200, "ObelixPro", 30)
     play_button:setFillColor(0, 0, 0)
     play_button:addEventListener("tap", gotoGame)
 end
