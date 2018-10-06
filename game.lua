@@ -28,20 +28,19 @@ function scene:create(event)
     physics.addBody(right_wall, "static")
 
     -- создаём ракетки
+	local top_racket = display.newRoundedRect(display.contentCenterX, 0, 60, 20, 15)
+	physics.addBody(top_racket, "static")
+	top_racket:setFillColor(0)
+	local bottom_racket = display.newRoundedRect(display.contentCenterX, maxHeight - 85, 60, 20, 15)
+	physics.addBody(bottom_racket, "static")
+	bottom_racket:setFillColor(0)
+
 	if game_mode == "multiplayer" then
-	    player1_racket = display.newRoundedRect(display.contentCenterX, 0, 60, 20, 15)
-	    player1_racket:setFillColor(0)
-	    physics.addBody(player1_racket, "static")
-	    player2_racket = display.newRoundedRect(display.contentCenterX, maxHeight - 85, 60, 20, 15)
-	    player2_racket:setFillColor(0)
-	    physics.addBody(player2_racket, "static")
+	    player1_racket = top_racket
+	    player2_racket = bottom_racket
 	else
-		bot_racket = display.newRoundedRect(display.contentCenterX, 0, 60, 20, 15)
-		bot_racket:setFillColor(0)
-		physics.addBody(bot_racket, "static")
-		player_racket = display.newRoundedRect(display.contentCenterX, maxHeight - 85, 60, 20, 15)
-		player_racket:setFillColor(0)
-		physics.addBody(player_racket, "static")
+		bot_racket = top_racket
+		player_racket = bottom_racket
 	end
 
     -- создаём мячик
@@ -50,48 +49,37 @@ function scene:create(event)
     physics.addBody(ball, "dynamic", {bounce = 1})
 
     -- создаём переменные для значений очков каждого игрока и выводим их
+	local top_score = 0
+	local top_score_text = display.newText {
+		text = top_score,
+		x = 0,
+		y = 0,
+		font = "ObelixPro",
+		fontSize = 35
+	}
+	top_score_text:setFillColor(0)
+	top_score_text.anchorX = 0
+	local bottom_score = 0
+	local bottom_score_text = display.newText {
+		text = bottom_score,
+		x = maxWidth,
+		y = maxHeight - 85,
+		font = "ObelixPro",
+		fontSize = 35
+	}
+	bottom_score_text:setFillColor(0)
+	bottom_score_text.anchorX = 1
+
 	if game_mode == "multiplayer" then
-	    player1_score = 0
-	    player1_score_text = display.newText {
-	        text = player1_score,
-	        x = 0,
-	        y = 0,
-			font = "ObelixPro",
-	        fontSize = 35
-	    }
-	    player1_score_text:setFillColor(0, 0, 0)
-	    player1_score_text.anchorX = 0
-	    player2_score = 0
-	    player2_score_text = display.newText {
-	        text = player2_score,
-	        x = maxWidth,
-	        y = maxHeight - 85,
-			font = "ObelixPro",
-	        fontSize = 35
-	    }
-	    player2_score_text:setFillColor(0, 0, 0)
-	    player2_score_text.anchorX = 1
+	    player1_score = top_score
+	    player1_score_text = top_score_text
+	    player2_score = bottom_score
+	    player2_score_text = bottom_score_text
 	else
-		bot_score = 0
-		bot_score_text = display.newText {
-		    text = bot_score,
-		    x = 0,
-		    y = 0,
-			font = "ObelixPro",
-		    fontSize = 35
-		}
-		bot_score_text:setFillColor(0, 0, 0)
-		bot_score_text.anchorX = 0
-		local player_score = 0
-		local player_score_text = display.newText {
-		    text = player_score,
-		    x = maxWidth,
-		    y = maxHeight - 85,
-			font = "ObelixPro",
-		    fontSize = 35
-		}
-		player_score_text:setFillColor(0, 0, 0)
-		player_score_text.anchorX = 1
+		bot_score = top_score
+		bot_score_text = top_score_text
+		player_score = bottom_score
+		player_score_text = bottom_score_text
 	end
 
     local function launch_ball()
@@ -125,11 +113,9 @@ function scene:create(event)
 	    end
 	    return true
 	end
+	bottom_racket:addEventListener("touch", move_racket)
 	if game_mode == "multiplayer" then
-    	player1_racket:addEventListener("touch", move_racket)
-    	player2_racket:addEventListener("touch", move_racket)
-	else
-		player_racket:addEventListener("touch", move_racket)
+    	top_racket:addEventListener("touch", move_racket)
 	end
 
     local function game_loop()
@@ -139,36 +125,19 @@ function scene:create(event)
 
         if ball.y < 0 or ball.y > maxHeight then
             -- обновляем значения очков
-			if game_mode == "multiplayer" then
-	            if ball.y < 0 then
-	                player2_score = player2_score + 1
-	                player2_score_text.text = player2_score
-	            else
-	                player1_score = player1_score + 1
-	                player1_score_text.text = player1_score
-	            end
+			if ball.y < 0 then
+				bottom_score = bottom_score + 1
+				bottom_score_text.text = bottom_score
 			else
-				if ball.y < 0 then
-		            player_score = player_score + 1
-		            player_score_text.text = player_score
-		        else
-		            bot_score = bot_score + 1
-		            bot_score_text.text = bot_score
-		        end
+				top_score = top_score + 1
+				top_score_text.text = top_score
 			end
 
             -- восстанавливем позиции ракеток
-			if game_mode == "multiplayer" then
-	            player1_racket.x = display.contentCenterX
-	            player1_racket.y = 0
-	            player2_racket.x = display.contentCenterX
-	            player2_racket.y = maxHeight - 85
-			else
-				bot_racket.x = display.contentCenterX
-		        bot_racket.y = 0
-		        player_racket.x = display.contentCenterX
-		        player_racket.y = maxHeight - 85
-			end
+			top_racket.x = display.contentCenterX
+			top_racket.y = 0
+			bottom_racket.x = display.contentCenterX
+			bottom_racket.y = maxHeight - 85
 
             -- восстанавливаем позицию мячика
             ball.x = display.contentCenterX
